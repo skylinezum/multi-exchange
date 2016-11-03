@@ -31,6 +31,7 @@ describe('multi-plnx', function () {
     });
 
     it('should show fills', function() {
+      multi.start = 0;
       return multi.fills()
       .then(function (res) {
         console.log(JSON.stringify(res, null, 2));

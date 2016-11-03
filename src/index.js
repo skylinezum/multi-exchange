@@ -35,6 +35,8 @@ class MultiExchange {
       case 'PLNX':
         this.api = Poloniex.createPrivateApi(params.public, params.private, 'ibb');
         this.api.nonce *= 1000;
+        this.end = Date.now() / 1000 | 0;
+        this.start = this.end - 86400;
         break;
       case 'KRKN':
         this.api = bird.promisifyAll(new KrakenClient(params.public, params.private));
@@ -292,9 +294,17 @@ class MultiExchange {
         });
         break;
       case 'PLNX':
-        let end = Date.now() / 1000 | 0;
-        let start = end - 86400;
-        return this.api.tradeHistory(start, end);
+        return this.api.tradeHistory(this.start, this.end)
+        .then(res => {
+          let fills = [];
+          Object.keys(res).forEach(k => {
+            res[k].forEach(r => {
+              r.product_id = k;
+              fills.push(r);
+            });
+          });
+          return fills;
+        });
         break;
       case 'KRKN':
         break;
