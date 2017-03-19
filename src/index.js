@@ -178,7 +178,7 @@ class MultiExchange {
         .then(res => {
           let data = {};
           res[1].forEach(acc => {
-            data[acc.currency] = acc.balance;
+            data[acc.currency] = Number(acc.balance);
           });
           return data;
         });

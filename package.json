@@ -1,6 +1,6 @@
 {
   "name": "multi-exchange",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "single package api for multiple exchanges",
   "main": "./dist/index.js",
   "scripts": {

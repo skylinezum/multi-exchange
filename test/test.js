@@ -9,7 +9,7 @@ describe('multi-plnx', function () {
   const plnxConfig = config.PLNX;
   var plnxMulti = new Multi('PLNX', {public: plnxConfig.public, private: plnxConfig.private});
   //userInfo skip because not authorized to use this endpoint
-  it.skip('should show total balances', function () {
+  it('should show total balances', function () {
     return plnxMulti.totalBalance()
     .then(res => {
       console.log(JSON.stringify(res, null, 2));
@@ -63,7 +63,7 @@ describe('multi-plnx', function () {
 describe('multi-gdax', function () {
   const gdaxConfig = config.GDAX;
   var gdaxMulti = new Multi('GDAX', {passphrase: gdaxConfig.passphrase, public: gdaxConfig.public, private: gdaxConfig.private});
-  it.skip('should show total balances', function () {
+  it('should show total balances', function () {
     return gdaxMulti.totalBalance()
     .then(res => {
       console.log(JSON.stringify(res, null, 2));
