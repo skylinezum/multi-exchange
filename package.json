@@ -1,6 +1,6 @@
 {
   "name": "multi-exchange",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "single package api for multiple exchanges",
   "main": "./dist/index.js",
   "scripts": {
@@ -35,9 +35,10 @@
     "mocha": "^3.1.2"
   },
   "dependencies": {
-    "@you21979/poloniex.com": "0.0.4",
+    "@you21979/poloniex.com": "0.0.8",
     "bluebird": "^3.4.6",
-    "gdax": "^0.2.1",
-    "kraken-api": "^0.1.7"
+    "gdax": "^0.3.1",
+    "kraken-api": "^0.1.7",
+    "moment": "^2.18.0"
   }
 }

@@ -2,6 +2,7 @@ import bird from 'bluebird';
 import Gdax from 'gdax';
 import Poloniex from '@you21979/poloniex.com';
 import Kraken from 'kraken-api';
+import moment from 'moment';
 
 //params shape
 //{public, secret, passphrase, clientId}
@@ -359,7 +360,7 @@ class MultiExchange {
         break;
       case 'PLNX':
         let oArray = [];
-        return api.openOrders()
+        return this.api.openOrders()
         .then(resA => {
           Object.keys(resA).forEach(k => {
             let orders = resA[k];
@@ -397,6 +398,62 @@ class MultiExchange {
         break;
       default:
         return bird.reject(`exchange: ${this.exchange} not supported`);
+    }
+  }
+
+  /*
+   ##### #####    ##   #    #  ####  ###### ###### #####   ####
+     #   #    #  #  #  ##   # #      #      #      #    # #
+     #   #    # #    # # #  #  ####  #####  #####  #    #  ####
+     #   #####  ###### #  # #      # #      #      #####       #
+     #   #   #  #    # #   ## #    # #      #      #   #  #    #
+     #   #    # #    # #    #  ####  #      ###### #    #  ####
+  */
+  //change in balance due to deposits or withdawals from a start time to and end time as isoString
+  //returns { BTC: -10.0, ETH: 1, USD: 0 }
+  transfers(start, end) {
+    const startMoment = moment(start);
+    const endMoment = moment(end);
+    switch (this.exchange) {
+      case 'GDAX':
+
+        return this.api.getAccountsAsync()
+        .then(res => {
+          let data = {};
+
+          res[1].forEach(acc => {
+            data[acc.currency] = this.api.getAccountHistoryAsync(acc.id)
+            .then(resHist => {
+              return bird.reduce(resHist[1], (total, hist) => {
+                const histMoment = moment(hist.created_at);
+                if (hist.type !== 'transfer') return total;
+                if (!histMoment.isBetween(startMoment, endMoment)) return total;
+                return total + Number(hist.amount);
+              }, 0);
+            });
+          });
+
+          return bird.props(data);
+        });
+        break;
+      case 'PLNX':
+        return this.api.depositsWithdrawals(startMoment.unix(), endMoment.unix())
+        .then(res => {
+          let data = {};
+          res.deposits.forEach(d => {
+            if (!data.hasOwnProperty(d.currency)) data[d.currency] = 0;
+            data[d.currency] += Number(d.amount);
+          });
+
+          res.withdrawals.forEach(w => {
+            if (!data.hasOwnProperty(w.currency)) data[w.currency] = 0;
+            data[w.currency] -= Number(w.amount);
+          });
+          return data;
+        });
+        break;
+      case 'KRKN':
+        break;
     }
   }
 }
